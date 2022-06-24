@@ -1,12 +1,16 @@
-﻿namespace NewConsoleInput;
+﻿
 using ConsoleInput;
 
-static class Programm
+namespace NewConsoleInput;
+using ConsoleInput.Internals;
+
+static class Program
 {
     public static void Main()
     {
-        var num = Input.CreateNumber<int>("Welcome Message");
-        Console.WriteLine(num);
 
+        double a = Input.CreateNumber<double>("Enter a int number");
+        //var num = Input.CreateNumber<int>("Welcome Message");
+        Console.WriteLine(a);
     }
 }
