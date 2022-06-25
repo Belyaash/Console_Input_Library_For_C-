@@ -7,6 +7,7 @@ internal class InputBuffer : IInputBuffer
     private IValidator validator;
     private CultureInfo culture;
     private TypeCode typeCode;
+    private List<ConsoleKeyInfo> keys = new List<ConsoleKeyInfo>();
     public string Result { get; private set; }
     public bool IsValidResult { get; private set; }
     public InputBuffer(IValidator validator, CultureInfo ci, TypeCode typeCode)
@@ -18,8 +19,7 @@ internal class InputBuffer : IInputBuffer
     }
     public void ProcessInput(ConsoleKeyInfo cki)
     {
-        bool isEnter = false;
-        string tempResult = Result;
+        string tempResult;
         switch (cki.Key)
         {
             case ConsoleKey.Backspace:
@@ -34,11 +34,26 @@ internal class InputBuffer : IInputBuffer
             }
             case ConsoleKey.Enter:
             {
-                isEnter = true;
                 IsValidResult = validator.IsValid(Result);
                 if (!IsValidResult)
                     Console.Beep();
-                break;
+                return;
+            }
+            case ConsoleKey.Delete:
+            {
+                if (keys.Count == 0)
+                    return;
+
+                keys.RemoveAt(keys.Count-1);
+                var currentKeys = keys.ToList();
+                keys.Clear();
+                Result = validator.ClearString(Result);
+                foreach (var key in currentKeys.ToList())
+                {
+                    ProcessInput(key);
+                }
+
+                return;
             }
             default:
             {
@@ -46,13 +61,14 @@ internal class InputBuffer : IInputBuffer
                 break;
             }
         }
-        if (isEnter)
-            return;
 
         if (tempResult == Result)
             Console.Beep();
         else
+        {
             Result = tempResult;
+            keys.Add(cki);
+        }
     }
 
     public void PrintCurrentResult()

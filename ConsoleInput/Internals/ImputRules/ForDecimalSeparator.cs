@@ -28,7 +28,7 @@ internal class ForDecimalSeparator : IInputRule
 
     public string TryAddSymbol(string result, char symbol)
     {
-        if (!haveSep)
+        if ((!haveSep) && (symbol == separator[0]))
         {
             haveSep = true;
             result += separator;
