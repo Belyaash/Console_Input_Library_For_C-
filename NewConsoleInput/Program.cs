@@ -8,6 +8,6 @@ static class Program
 {
     public static void Main()
     {
-        int Num = Input.CreateNumber<int>("Input an int", MinMax<int>.LowerThan(0));
+        double Num = Input.CreateNumber<double>("Input an int", MinMax<double>.LowerThan(0.0001));
     }
 }

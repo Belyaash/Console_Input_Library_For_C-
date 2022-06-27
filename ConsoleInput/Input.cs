@@ -32,9 +32,21 @@ namespace ConsoleInput
         public static T CreateNumber<T>(string welcome) where T : struct, IComparable<T>
         {
             MinMax<T> minMax = MinMax<T>.TypeRange();
-            return CreateNumber<T>(welcome, minMax);
+            return CreateNumber<T>(welcome, minMax, null);
         }
+
         public static T CreateNumber<T>(string welcome, MinMax<T> minMax) where T : struct, IComparable<T>
+        {
+            return CreateNumber<T>(welcome, minMax, null);
+        }
+
+        public static T CreateNumber<T>(string welcome, string? format) where T : struct, IComparable<T>
+        {
+            MinMax<T> minMax = MinMax<T>.TypeRange();
+            return CreateNumber<T>(welcome, minMax, format);
+        }
+
+        public static T CreateNumber<T>(string welcome, MinMax<T> minMax,string? format) where T : struct, IComparable<T>
         {
             Type type = typeof(T);
             TypeCode typeCode = Type.GetTypeCode(type);
@@ -42,6 +54,7 @@ namespace ConsoleInput
 
             Console.WriteLine(welcome);
 
+            format ??= "#,#.###;-#,#.###;0";
             IValidator validator = Validator.GetByTypeCode<T>(typeCode, cultureInfo, minMax.Min, minMax.Max);
             IInputBuffer ib = new InputBuffer(validator, cultureInfo, typeCode);
 
@@ -50,7 +63,7 @@ namespace ConsoleInput
             {
                 cki = Console.ReadKey(true);
                 ib.ProcessInput(cki);
-                ib.PrintCurrentResult();
+                ib.PrintCurrentResult(format);
 
             } while ((cki.Key != ConsoleKey.Enter)||(!ib.IsValidResult));
 

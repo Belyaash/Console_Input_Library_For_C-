@@ -70,10 +70,8 @@ internal class InputBuffer : IInputBuffer
         }
     }
 
-    public void PrintCurrentResult()
+    public void PrintCurrentResult(string format)
     {
-        string format = "#,#.###;-#,#.###;0";
-
         ConsoleWriter.OverwriteCurrentLine(StringFormatter.TypeCodeToString(typeCode, format, Result,
             culture));
     }
