@@ -5,7 +5,7 @@ namespace ConsoleInput.Internals;
 
 internal class Validator
 {
-    public static IValidator GetByTypeCode<T>(TypeCode tc, CultureInfo culture)
+    public static IValidator GetByTypeCode<T>(TypeCode tc, CultureInfo culture, T min, T max) where T : struct, IComparable<T>
     {
         switch (tc)
         {
@@ -20,26 +20,29 @@ internal class Validator
             case TypeCode.Single:
             case TypeCode.Double:
             case TypeCode.Decimal:
-            case TypeCode.DateTime:
-                return NumberValidator<T>.Create(tc, culture);
+                return NumberValidator<T>.Create(tc, culture, min, max);
             default:
                 throw new ArgumentOutOfRangeException(nameof(tc), tc, null);
         }
     }
 }
 
-internal class NumberValidator<T> : IValidator
+internal class NumberValidator<T> : IValidator where T : struct, IComparable<T>
 {
     private List<IInputRule> inputRules;
-    private NumberValidator(List<IInputRule> rules)
+    private T min;
+    private T max;
+    private NumberValidator(List<IInputRule> rules, T min, T max)
     {
+        this.min = min;
+        this.max = max;
         this.inputRules = rules;
     }
 
-    public static NumberValidator<T> Create(TypeCode tc, CultureInfo culture)
+    public static NumberValidator<T> Create(TypeCode tc, CultureInfo culture, T min, T max)
     {
         List<IInputRule> rules = ValidatorRulesGetter.GetByTypeCode(tc, culture);
-        return new NumberValidator<T>(rules);
+        return new NumberValidator<T>(rules,min,max);
     }
 
     public string TryAddSymbol(string result, char symbol)
@@ -95,14 +98,7 @@ internal class NumberValidator<T> : IValidator
 
     public bool IsValid(string result)
     {
-        return result.TryParse<T>(out var number);
+        bool isParsed = result.TryParse<T>(out var number);
+        return isParsed && min.CompareTo(number) < 1 && max.CompareTo(number) > -1;
     }
-}
-
-internal interface IInputRule
-{
-    string TryAddSymbol(string result, char symbol);
-    string RemoveLastSymbol(string result);
-    void SetToDefault();
-
 }

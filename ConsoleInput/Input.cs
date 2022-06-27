@@ -31,13 +31,18 @@ namespace ConsoleInput
 
         public static T CreateNumber<T>(string welcome) where T : struct, IComparable<T>
         {
+            MinMax<T> minMax = MinMax<T>.TypeRange();
+            return CreateNumber<T>(welcome, minMax);
+        }
+        public static T CreateNumber<T>(string welcome, MinMax<T> minMax) where T : struct, IComparable<T>
+        {
             Type type = typeof(T);
             TypeCode typeCode = Type.GetTypeCode(type);
             CheckValidOfType(typeCode);
 
             Console.WriteLine(welcome);
 
-            IValidator validator = Validator.GetByTypeCode<T>(typeCode, cultureInfo);
+            IValidator validator = Validator.GetByTypeCode<T>(typeCode, cultureInfo, minMax.Min, minMax.Max);
             IInputBuffer ib = new InputBuffer(validator, cultureInfo, typeCode);
 
             ConsoleKeyInfo cki;

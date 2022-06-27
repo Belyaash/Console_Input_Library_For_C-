@@ -44,8 +44,7 @@ internal class InputBuffer : IInputBuffer
                 if (keys.Count == 0)
                     return;
 
-                keys.RemoveAt(keys.Count-1);
-                var currentKeys = keys.ToList();
+                var currentKeys = keys.GetRange(0,keys.Count-1);
                 keys.Clear();
                 Result = validator.ClearString(Result);
                 foreach (var key in currentKeys.ToList())

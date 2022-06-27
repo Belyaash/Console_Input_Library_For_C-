@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleInput.Internals
+namespace ConsoleInput
 {
     public static class GenericMethods
     {
@@ -15,6 +15,18 @@ namespace ConsoleInput.Internals
             Type[] parameterTypes = new Type[] { typeof(string), type.MakeByRefType() };
             MethodInfo method = type.GetMethod("TryParse", bindingFlags, null, parameterTypes, null);
             return method;
+        }
+        internal static T ReadStaticField<T>(string name, object o)
+        {
+            FieldInfo field = typeof(T).GetField(name, BindingFlags.Public | BindingFlags.Static);
+            if (field == null)
+            {
+                throw new InvalidOperationException
+                ("Invalid type argument for ReadStaticField<T>: " +
+                 typeof(T).Name);
+            }
+
+            return (T)field.GetValue(o);
         }
 
         public static bool TryParse(this string s, Type type, out object result)
@@ -37,8 +49,7 @@ namespace ConsoleInput.Internals
         public static bool TryParse<T>(this string s, out T result)
         {
             result = default;
-            object tempResult;
-            bool success = s.TryParse(typeof(T), out tempResult);
+            bool success = s.TryParse(typeof(T), out var tempResult);
             if (success)
             {
                 result = (T)tempResult;
