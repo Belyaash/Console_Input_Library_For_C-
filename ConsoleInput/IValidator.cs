@@ -6,4 +6,6 @@ public interface IValidator
     string ClearString(string result);
     string RemoveLast(string result);
     bool IsValid(string result);
+
+    void AddCheckRules(List<ICheckRule> icr);
 }

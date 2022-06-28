@@ -4,18 +4,18 @@ namespace ConsoleInput.Internals;
 
 internal class InputBuffer : IInputBuffer
 {
-    private IValidator validator;
-    private CultureInfo culture;
-    private TypeCode typeCode;
-    private List<ConsoleKeyInfo> keys = new List<ConsoleKeyInfo>();
+    private readonly IValidator _validator;
+    private readonly CultureInfo _culture;
+    private readonly TypeCode _typeCode;
+    private List<ConsoleKeyInfo> keys = new();
     public string Result { get; private set; }
     public bool IsValidResult { get; private set; }
     public InputBuffer(IValidator validator, CultureInfo ci, TypeCode typeCode)
     {
-        this.validator = validator;
-        this.culture = ci;
+        this._validator = validator;
+        this._culture = ci;
         this.Result = "";
-        this.typeCode = typeCode;
+        this._typeCode = typeCode;
     }
     public void ProcessInput(ConsoleKeyInfo cki)
     {
@@ -24,17 +24,17 @@ internal class InputBuffer : IInputBuffer
         {
             case ConsoleKey.Backspace:
             {
-                tempResult = validator.RemoveLast(Result);
+                tempResult = _validator.RemoveLast(Result);
                 break;
             }
             case ConsoleKey.Escape:
             {
-                tempResult = validator.ClearString(Result);
+                tempResult = _validator.ClearString(Result);
                 break;
             }
             case ConsoleKey.Enter:
             {
-                IsValidResult = validator.IsValid(Result);
+                IsValidResult = _validator.IsValid(Result);
                 if (!IsValidResult)
                     Console.Beep();
                 return;
@@ -46,7 +46,7 @@ internal class InputBuffer : IInputBuffer
 
                 var currentKeys = keys.GetRange(0,keys.Count-1);
                 keys.Clear();
-                Result = validator.ClearString(Result);
+                Result = _validator.ClearString(Result);
                 foreach (var key in currentKeys.ToList())
                 {
                     ProcessInput(key);
@@ -56,7 +56,7 @@ internal class InputBuffer : IInputBuffer
             }
             default:
             {
-                tempResult = validator.TryAddSymbol(Result, cki.KeyChar);
+                tempResult = _validator.TryAddSymbol(Result, cki.KeyChar);
                 break;
             }
         }
@@ -72,7 +72,7 @@ internal class InputBuffer : IInputBuffer
 
     public void PrintCurrentResult(string format)
     {
-        ConsoleWriter.OverwriteCurrentLine(StringFormatter.TypeCodeToString(typeCode, format, Result,
-            culture));
+        ConsoleWriter.OverwriteCurrentLine(StringFormatter.TypeCodeToString(_typeCode, format, Result,
+            _culture));
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System.Globalization;
-using ConsoleInput.Internals.ImputRules;
+using ConsoleInput.Internals.InputRules;
 
 namespace ConsoleInput.Internals
 {

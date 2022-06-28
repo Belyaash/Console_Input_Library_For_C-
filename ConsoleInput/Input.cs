@@ -10,10 +10,15 @@ namespace ConsoleInput
 {
     public static class Input
     {
-        internal static CultureInfo cultureInfo;
+        private static readonly CultureInfo CultureInfo;
         static Input()
         {
-            cultureInfo = CultureInfo.CurrentCulture;
+            CultureInfo = new CultureInfo(CultureInfo.CurrentCulture.LCID);
+        }
+
+        public static CultureInfo InputOptions()
+        {
+            return CultureInfo;
         }
         private static void CheckValidOfType(TypeCode tc)
         {
@@ -31,22 +36,42 @@ namespace ConsoleInput
 
         public static T CreateNumber<T>(string welcome) where T : struct, IComparable<T>
         {
+            return CreateNumber<T>(welcome, icr: null);
+        }
+
+        public static T CreateNumber<T>(string welcome, List<ICheckRule>? icr) where T : struct, IComparable<T>
+        {
             MinMax<T> minMax = MinMax<T>.TypeRange();
-            return CreateNumber<T>(welcome, minMax, null);
+            return CreateNumber<T>(welcome, minMax, null, icr);
         }
 
         public static T CreateNumber<T>(string welcome, MinMax<T> minMax) where T : struct, IComparable<T>
         {
-            return CreateNumber<T>(welcome, minMax, null);
+            return CreateNumber<T>(welcome, minMax, null, null);
+        }
+
+        public static T CreateNumber<T>(string welcome, MinMax<T> minMax, List<ICheckRule>? icr) where T : struct, IComparable<T>
+        {
+            return CreateNumber<T>(welcome, minMax,null, icr);
         }
 
         public static T CreateNumber<T>(string welcome, string? format) where T : struct, IComparable<T>
         {
+            return CreateNumber<T>(welcome, format, null);
+        }
+
+        public static T CreateNumber<T>(string welcome, string? format, List<ICheckRule>? icr) where T : struct, IComparable<T>
+        {
             MinMax<T> minMax = MinMax<T>.TypeRange();
-            return CreateNumber<T>(welcome, minMax, format);
+            return CreateNumber<T>(welcome, minMax, format, icr);
         }
 
         public static T CreateNumber<T>(string welcome, MinMax<T> minMax,string? format) where T : struct, IComparable<T>
+        {
+            return CreateNumber<T>(welcome, minMax, format, null);
+        }
+
+        public static T CreateNumber<T>(string welcome, MinMax<T> minMax,string? format, List<ICheckRule>? icr) where T : struct, IComparable<T>
         {
             Type type = typeof(T);
             TypeCode typeCode = Type.GetTypeCode(type);
@@ -55,8 +80,12 @@ namespace ConsoleInput
             Console.WriteLine(welcome);
 
             format ??= "#,#.###;-#,#.###;0";
-            IValidator validator = Validator.GetByTypeCode<T>(typeCode, cultureInfo, minMax.Min, minMax.Max);
-            IInputBuffer ib = new InputBuffer(validator, cultureInfo, typeCode);
+
+            IValidator validator = Validator.GetByTypeCode<T>(typeCode, CultureInfo, minMax.Min, minMax.Max);
+            if (icr != null) 
+                validator.AddCheckRules(icr);
+            
+            IInputBuffer ib = new InputBuffer(validator, CultureInfo, typeCode);
 
             ConsoleKeyInfo cki;
             do

@@ -29,13 +29,14 @@ internal class Validator
 
 internal class NumberValidator<T> : IValidator where T : struct, IComparable<T>
 {
-    private List<IInputRule> inputRules;
-    private T min;
-    private T max;
+    private readonly List<IInputRule> inputRules;
+    private List<ICheckRule> _checkRules = new();
+    private readonly T _min;
+    private readonly T _max;
     private NumberValidator(List<IInputRule> rules, T min, T max)
     {
-        this.min = min;
-        this.max = max;
+        this._min = min;
+        this._max = max;
         this.inputRules = rules;
     }
 
@@ -45,14 +46,22 @@ internal class NumberValidator<T> : IValidator where T : struct, IComparable<T>
         return new NumberValidator<T>(rules,min,max);
     }
 
+    public void AddCheckRules(List<ICheckRule> icr)
+    {
+        this._checkRules = icr;
+    }
+
     public string TryAddSymbol(string result, char symbol)
     {
+        if (_checkRules.Any(rule => !rule.Validate(result)))
+        {
+            return result;
+        }
         string tempResult = result;
         foreach (var rule in inputRules)
         {
             tempResult = rule.TryAddSymbol(result, symbol);
-            Debug.Write(tempResult);
-            if (tempResult != result)
+             if (tempResult != result)
                 break;
         }
 
@@ -99,6 +108,6 @@ internal class NumberValidator<T> : IValidator where T : struct, IComparable<T>
     public bool IsValid(string result)
     {
         bool isParsed = result.TryParse<T>(out var number);
-        return isParsed && min.CompareTo(number) < 1 && max.CompareTo(number) > -1;
+        return isParsed && _min.CompareTo(number) < 1 && _max.CompareTo(number) > -1;
     }
 }
