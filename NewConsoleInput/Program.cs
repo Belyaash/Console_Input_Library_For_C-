@@ -20,7 +20,7 @@ static class Program
 
         Input.InputOptions().SetCurrencyDecimalSeparator(">>")
             .SetCurrencySymbol("rubles")
-            .SetNumberGroupSeparator("    ")
+            .SetNumberGroupSeparator("  ")
             .SetNumberDecimalSeparator("'")
             .SetCurrencyNegativePattern(0);
 

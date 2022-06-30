@@ -1,4 +1,4 @@
-﻿namespace ConsoleInput;
+﻿namespace ConsoleInput.Internals;
 
 public interface IInputBuffer
 {

@@ -7,8 +7,14 @@ using System.Threading.Tasks;
 
 namespace ConsoleInput.Internals
 {
-    internal class StringFormatter
+    internal class StringFormatter 
     {
+        //private static string NonDecimalToString<T>(string format, string result, CultureInfo ci) where T : struct
+        //{
+
+        //    bool isParsed = result.TryParse<T>(out var number);
+        //    return isParsed ? number.ToString(format, ci) : result;
+        //}
         internal static string TypeCodeToString(TypeCode typeCode, string format, string result, CultureInfo ci)
         {
             switch (typeCode)
@@ -106,7 +112,7 @@ namespace ConsoleInput.Internals
                     {
                         var number = float.Parse(result);
                         string toPrint = number.ToString(format, ci);
-                        if (ci.NumberFormat.NumberDecimalSeparator[^1] == result[^1])
+                        if (ci.Parent.NumberFormat.NumberDecimalSeparator[^1] == result[^1])
                             toPrint += ci.NumberFormat.NumberDecimalSeparator;
                         return toPrint;
                     }
@@ -120,7 +126,7 @@ namespace ConsoleInput.Internals
                     {
                         var number = double.Parse(result);
                         string toPrint = number.ToString(format, ci);
-                        if (ci.NumberFormat.NumberDecimalSeparator[^1] == result[^1])
+                        if (ci.Parent.NumberFormat.NumberDecimalSeparator[^1] == result[^1])
                             toPrint += ci.NumberFormat.NumberDecimalSeparator;
                         return toPrint;
                     }
@@ -134,7 +140,7 @@ namespace ConsoleInput.Internals
                     {
                         var number = decimal.Parse(result);
                         string toPrint = number.ToString(format, ci);
-                        if (ci.NumberFormat.NumberDecimalSeparator[^1] == result[^1])
+                        if (ci.Parent.NumberFormat.NumberDecimalSeparator[^1] == result[^1])
                             toPrint += ci.NumberFormat.NumberDecimalSeparator;
                         return toPrint;
                     }
