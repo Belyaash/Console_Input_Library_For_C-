@@ -10,15 +10,18 @@ namespace ConsoleInput
 {
     public static class Input
     {
-        private static readonly CultureInfo CultureInfo;
+        internal static InputOptionsHolder OptionsHolder;
+
+        internal static CultureInfo CultureInfo;
         static Input()
         {
             CultureInfo = new CultureInfo(CultureInfo.CurrentCulture.LCID);
+            OptionsHolder = new InputOptionsHolder(CultureInfo);
         }
 
-        public static CultureInfo InputOptions()
+        public static InputOptionsHolder InputOptions()
         {
-            return CultureInfo;
+            return OptionsHolder;
         }
         private static void CheckValidOfType(TypeCode tc)
         {

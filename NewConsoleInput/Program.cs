@@ -23,6 +23,7 @@ static class Program
             .SetNumberGroupSeparator("  ")
             .SetNumberDecimalSeparator("'")
             .SetCurrencyNegativePattern(0);
+            
 
         double Num = Input.CreateNumber<double>("Input an int", MinMax<double>.LowerThan(31));
     }
