@@ -53,7 +53,7 @@ internal class NumberValidator<T> : IValidator where T : struct, IComparable<T>
 
     public string TryAddSymbol(string result, char symbol)
     {
-        if (_checkRules.Any(rule => !rule.Validate(result)))
+        if (_checkRules.Any(rule => !rule.Validate(result,symbol)))
         {
             return result;
         }

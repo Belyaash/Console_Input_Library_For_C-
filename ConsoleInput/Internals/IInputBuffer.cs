@@ -6,4 +6,6 @@ public interface IInputBuffer
     bool IsValidResult { get; }
     void ProcessInput(ConsoleKeyInfo cki);
     void PrintCurrentResult(string format);
+    void PrintResultOnPartOfLine(string format, int leftPos, int rightPos);
+
 }

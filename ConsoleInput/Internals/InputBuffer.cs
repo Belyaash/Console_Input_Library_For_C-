@@ -75,4 +75,11 @@ internal class InputBuffer : IInputBuffer
         ConsoleWriter.OverwriteCurrentLine(StringFormatter.TypeCodeToString(_typeCode, format, Result,
             _culture));
     }
+
+    public void PrintResultOnPartOfLine(string format, int leftPos, int rightPos)
+    {
+        ConsoleWriter.OverwritePartOfCurrentLine(StringFormatter.TypeCodeToString(_typeCode, format, Result,
+            _culture), leftPos, rightPos);
+    }
+
 }
