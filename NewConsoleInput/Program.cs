@@ -17,7 +17,7 @@ static class Program
             .SetNumberDecimalSeparator("'")
             .SetCurrencyNegativePattern(0);
 
-        int date = Input.CreateNumber<int>("Create int");
+        var date = Input.CreateMinutesSecondsMillisecondsTimeSpan("Create int");
         Console.WriteLine(date);
 
 

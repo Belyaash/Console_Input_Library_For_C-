@@ -39,4 +39,9 @@ public class MinMax<T> where T : struct, IComparable<T>
         T max = GenericMethods.ReadStaticField<T>("MaxValue", default(T));
         return new MinMax<T>(min, max);
     }
+
+    internal int GetMaxLength()
+    {
+        return Max.ToString().Length > Min.ToString().Length ? Max.ToString().Length : Min.ToString().Length;
+    }
 }

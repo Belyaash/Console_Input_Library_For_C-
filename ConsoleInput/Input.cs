@@ -38,37 +38,48 @@ namespace ConsoleInput
                     throw new ArgumentOutOfRangeException(nameof(tc), tc, null);
             }
         }
+        private static void PrintWelcomeMessageAndPattern(string welcome, string pattern)
+        {
+            Console.WriteLine(welcome);
+            Console.Write(pattern);
+        }
 
 
         public static TimeSpan CreateMinutesSecondsMillisecondsTimeSpan(string welcome)
         {
-            Console.WriteLine(welcome);
+            PrintWelcomeMessageAndPattern(welcome, "mm:ss.ms");
 
-            int minutes = CreateNumber<int>("Enter a minutes", MinMax<int>.Range(0, 59));
-            int seconds = CreateNumber<int>("Enter a seconds", MinMax<int>.Range(0, 59));
-            int milliseconds = CreateNumber<int>("Enter a milliseconds", MinMax<int>.Range(0, 999));
+            int minutes = CreateIntInConsoleRangeAndFillSpaceWithZeros(0, MinMax<int>.Range(0, 59));
+            int seconds = CreateIntInConsoleRangeAndFillSpaceWithZeros(3, MinMax<int>.Range(0, 59));
+            int milliseconds = CreateIntInConsoleRangeAndFillSpaceWithZeros(6, MinMax<int>.Range(0, 999));
 
+            Console.WriteLine();
             return new TimeSpan(0, 0 ,  minutes, seconds, milliseconds);
         }
 
+        
+
         public static TimeSpan CreateFullTimeSpan(string welcome)
         {
-            Console.WriteLine(welcome);
+            PrintWelcomeMessageAndPattern(welcome, "dddddddd.hh:mm:ss.ms");
 
-            int days = CreateNumber<int>("Enter a days", MinMax<int>.HigherThan(0));
-            int hours = CreateNumber<int>("Enter a hours", MinMax<int>.Range(0, 23));
-            int minutes = CreateNumber<int>("Enter a minutes", MinMax<int>.Range(0, 59));
-            int seconds = CreateNumber<int>("Enter a seconds", MinMax<int>.Range(0, 59));
-            int milliseconds = CreateNumber<int>("Enter a milliseconds", MinMax<int>.Range(0, 999));
+            int days = CreateIntInConsoleRange(0, MinMax<int>.Range(0,10000000));
+            int daysLength = days.ToString().Length;
+            ConsoleWriter.OverwriteCurrentLine(days + ".hh:mm:ss.ms");
 
+            int hours = CreateIntInConsoleRangeAndFillSpaceWithZeros(daysLength + 1, MinMax<int>.Range(0, 23));
+            int minutes = CreateIntInConsoleRangeAndFillSpaceWithZeros(daysLength + 4, MinMax<int>.Range(0, 59));
+            int seconds = CreateIntInConsoleRangeAndFillSpaceWithZeros(daysLength + 7, MinMax<int>.Range(0, 59));
+            int milliseconds = CreateIntInConsoleRangeAndFillSpaceWithZeros(daysLength + 10, MinMax<int>.Range(0, 999));
+
+            Console.WriteLine();
             return new TimeSpan(days,hours,minutes,seconds,milliseconds);
         }
 
 
         public static DateTime CreateDate(string welcome)
         {
-            Console.WriteLine(welcome);
-            ConsoleWriter.OverwriteCurrentLine(CultureInfo.DateTimeFormat.ShortDatePattern);
+            PrintWelcomeMessageAndPattern(welcome, CultureInfo.DateTimeFormat.ShortDatePattern);
 
             string[] dateFormat = CultureInfo.DateTimeFormat.ShortDatePattern.Split(CultureInfo.DateTimeFormat.DateSeparator);
             int separatorLength = CultureInfo.DateTimeFormat.DateSeparator.Length;
@@ -88,35 +99,51 @@ namespace ConsoleInput
 
             foreach (var item in dateFormat)
             {
-                List<ICheckRule> rules;
                 if (item[0] == 'd')
                 {
-                    rules = CreateCheckRulesForDate(2);
-                    day = CreateNumberOnPartOfLine<int>(MinMax<int>.Range(1, 31), null, rules, currentPos,
-                        currentPos + item.Length);
+                    day = CreateIntInConsoleRangeAndFillSpaceWithZeros(currentPos, MinMax<int>.Range(1,31));
                 }
 
                 if (item[0] == 'M')
                 {
-                    rules = CreateCheckRulesForDate(2);
-                    month = CreateNumberOnPartOfLine<int>(MinMax<int>.Range(1, 12), null, rules, currentPos,
-                        currentPos + item.Length);
+                    month = CreateIntInConsoleRangeAndFillSpaceWithZeros(currentPos, MinMax<int>.Range(1,12));
                 }
 
                 if (item[0] == 'y')
                 {
-                    rules = CreateCheckRulesForDate(4);
-                    year = CreateNumberOnPartOfLine<int>(MinMax<int>.Range(1, 9999), null, rules, currentPos,
-                        currentPos + item.Length);
+                    year = CreateIntInConsoleRangeAndFillSpaceWithZeros(currentPos, MinMax<int>.Range(1,999));
                 }
-
                 currentPos += item.Length + separatorLength;
             }
-
             return new DateTime(year, month, day);
         }
 
-        private static List<ICheckRule> CreateCheckRulesForDate(int maxLength)
+        private static int CreateIntInConsoleRangeAndFillSpaceWithZeros(int leftPos, MinMax<int> minMax)
+        {
+            var result = CreateIntInConsoleRange(leftPos, minMax);
+            FillSpaceWithZeros(leftPos, result, minMax.GetMaxLength());
+            return result;
+        }
+
+        private static int CreateIntInConsoleRange(int leftPos, MinMax<int> minMax)
+        {
+            int length = minMax.GetMaxLength();
+            var rules = CreateCheckRulesForNumericInput(length);
+            var result = CreateNumberOnPartOfLine<int>(minMax, null, rules, leftPos,
+                leftPos + length);
+            return result;
+        }
+
+        private static void FillSpaceWithZeros(int leftPos, int result, int length)
+        {
+            int resultLength = result.ToString().Length;
+            if (resultLength == length)
+                return;
+            string newResult = new string('0', length - resultLength) + result;
+            ConsoleWriter.OverwritePartOfCurrentLine(newResult,leftPos, leftPos + length);
+        }
+
+        private static List<ICheckRule> CreateCheckRulesForNumericInput(int maxLength)
         {
             var rules = new List<ICheckRule>()
             {
