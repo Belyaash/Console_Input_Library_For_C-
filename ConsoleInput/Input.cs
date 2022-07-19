@@ -47,7 +47,7 @@ namespace ConsoleInput
 
         public static TimeSpan CreateMinutesSecondsMillisecondsTimeSpan(string welcome)
         {
-            PrintWelcomeMessageAndPattern(welcome, "mm:ss.ms");
+            PrintWelcomeMessageAndPattern(welcome, "mm:ss.mls");
 
             int minutes = CreateIntWithLengthRuleAndFillSpaceWithZeros(0, MinMax<int>.Range(0, 59));
             int seconds = CreateIntWithLengthRuleAndFillSpaceWithZeros(3, MinMax<int>.Range(0, 59));
@@ -61,7 +61,7 @@ namespace ConsoleInput
 
         public static TimeSpan CreateFullTimeSpan(string welcome)
         {
-            PrintWelcomeMessageAndPattern(welcome, "dddddddd.hh:mm:ss.ms");
+            PrintWelcomeMessageAndPattern(welcome, "dddddddd.hh:mm:ss.mls");
 
             int days = CreateIntWithLengthRule(0, MinMax<int>.Range(0,10000000));
             int daysLength = days.ToString().Length;
@@ -99,19 +99,17 @@ namespace ConsoleInput
 
             foreach (var item in dateFormat)
             {
-                if (item[0] == 'd')
+                switch (item[0])
                 {
-                    day = CreateIntWithLengthRuleAndFillSpaceWithZeros(currentPos, MinMax<int>.Range(1,31));
-                }
-
-                if (item[0] == 'M')
-                {
-                    month = CreateIntWithLengthRuleAndFillSpaceWithZeros(currentPos, MinMax<int>.Range(1,12));
-                }
-
-                if (item[0] == 'y')
-                {
-                    year = CreateIntWithLengthRuleAndFillSpaceWithZeros(currentPos, MinMax<int>.Range(1,999));
+                    case 'd':
+                        day = CreateIntWithLengthRuleAndFillSpaceWithZeros(currentPos, MinMax<int>.Range(1, 31));
+                        break;
+                    case 'M':
+                        month = CreateIntWithLengthRuleAndFillSpaceWithZeros(currentPos, MinMax<int>.Range(1, 12));
+                        break;
+                    case 'y':
+                        year = CreateIntWithLengthRuleAndFillSpaceWithZeros(currentPos, MinMax<int>.Range(1, 999));
+                        break;
                 }
                 currentPos += item.Length + separatorLength;
             }
