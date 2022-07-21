@@ -158,7 +158,12 @@ namespace ConsoleInput
         /// True if user pressed 'y' or 'Y'
         /// False if user pressed 'n' or 'N'
         /// </returns>
-        public static bool CreateBoolean()
+        public static bool CreateBoolean(string welcome)
+        {
+            Console.WriteLine(welcome);
+            return CreateBoolean();
+        }
+        private static bool CreateBoolean()
         {
             ConsoleKeyInfo key = Console.ReadKey(true);
             switch (key.KeyChar)
