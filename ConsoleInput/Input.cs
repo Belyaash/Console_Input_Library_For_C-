@@ -151,6 +151,27 @@ namespace ConsoleInput
             ConsoleWriter.OverwritePartOfCurrentLine(newResult,leftPos, leftPos + length);
         }
 
+        /// <summary>
+        /// Returns a Boolean value based on the spelling of the corresponding letter
+        /// </summary>
+        /// <returns>
+        /// True if user pressed 'y' or 'Y'
+        /// False if user pressed 'n' or 'N'
+        /// </returns>
+        public static bool CreateBoolean()
+        {
+            ConsoleKeyInfo key = Console.ReadKey(true);
+            switch (key.KeyChar)
+            {
+                case 'y' or 'Y':
+                    return true;
+                case 'n' or 'N':
+                    return false;
+                default:
+                    Console.Beep();
+                    return CreateBoolean();
+            }
+        }
 
         public static T CreateNumber<T>(string welcome) where T : struct, IComparable<T>
         {
