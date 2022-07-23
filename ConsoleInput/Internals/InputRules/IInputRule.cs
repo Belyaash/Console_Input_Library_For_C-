@@ -1,4 +1,4 @@
-﻿namespace ConsoleInput.Internals;
+﻿namespace ConsoleInput.Internals.InputRules;
 
 internal interface IInputRule
 {

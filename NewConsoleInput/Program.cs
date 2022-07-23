@@ -17,9 +17,14 @@ static class Program
             .SetNumberDecimalSeparator("'")
             .SetCurrencyNegativePattern(0);
 
-        var date = Input.CreateMinutesSecondsMillisecondsTimeSpan("Create int");
-        Console.WriteLine(date);
+        string[] _validChars = new[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F" };
+        //ConsoleKeyInfo cki = Console.ReadKey();
+        //bool isValid = _validChars.Contains(cki.KeyChar.ToString().ToUpper());
+        //Console.WriteLine(isValid);
 
+        uint hex = Input.InputHexadecimal("Print a hexadecimal",MinMax<uint>.HigherThan(0));
+        Console.WriteLine();
+        Console.WriteLine(hex);
 
     }
 }

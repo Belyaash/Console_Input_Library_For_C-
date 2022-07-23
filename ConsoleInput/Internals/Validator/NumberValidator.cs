@@ -1,31 +1,7 @@
-﻿using System.Diagnostics;
+﻿using ConsoleInput.Internals.InputRules;
 using System.Globalization;
 
-namespace ConsoleInput.Internals;
-
-internal class Validator
-{
-    public static IValidator GetByTypeCode<T>(TypeCode tc, CultureInfo culture, T min, T max) where T : struct, IComparable<T>
-    {
-        switch (tc)
-        {
-            case TypeCode.Int32:
-            case TypeCode.SByte:
-            case TypeCode.Byte:
-            case TypeCode.Int16:
-            case TypeCode.UInt16:
-            case TypeCode.UInt32:
-            case TypeCode.Int64:
-            case TypeCode.UInt64:
-            case TypeCode.Single:
-            case TypeCode.Double:
-            case TypeCode.Decimal:
-                return NumberValidator<T>.Create(tc, culture, min, max);
-            default:
-                throw new ArgumentOutOfRangeException(nameof(tc), tc, null);
-        }
-    }
-}
+namespace ConsoleInput.Internals.Validator;
 
 internal class NumberValidator<T> : IValidator where T : struct, IComparable<T>
 {
@@ -35,25 +11,25 @@ internal class NumberValidator<T> : IValidator where T : struct, IComparable<T>
     private readonly T _max;
     private NumberValidator(List<IInputRule> rules, T min, T max)
     {
-        this._min = min;
-        this._max = max;
-        this.inputRules = rules;
+        _min = min;
+        _max = max;
+        inputRules = rules;
     }
 
     public static NumberValidator<T> Create(TypeCode tc, CultureInfo culture, T min, T max)
     {
         List<IInputRule> rules = ValidatorRulesGetter.GetByTypeCode(tc, culture);
-        return new NumberValidator<T>(rules,min,max);
+        return new NumberValidator<T>(rules, min, max);
     }
 
-    public void AddCheckRules(List<ICheckRule> icr)
+    public void ReplaceCheckRules(List<ICheckRule> icr)
     {
-        this._checkRules = icr;
+        _checkRules = icr;
     }
 
     public string TryAddSymbol(string result, char symbol)
     {
-        if (_checkRules.Any(rule => !rule.Validate(result,symbol)))
+        if (_checkRules.Any(rule => !rule.Validate(result, symbol)))
         {
             return result;
         }
@@ -61,7 +37,7 @@ internal class NumberValidator<T> : IValidator where T : struct, IComparable<T>
         foreach (var rule in inputRules)
         {
             tempResult = rule.TryAddSymbol(result, symbol);
-             if (tempResult != result)
+            if (tempResult != result)
                 break;
         }
 
@@ -70,7 +46,7 @@ internal class NumberValidator<T> : IValidator where T : struct, IComparable<T>
             return tempResult;
         }
 
-        bool isSuccessful = GenericMethods.TryParse<T>(tempResult, out var number);
+        bool isSuccessful = tempResult.TryParse<T>(out var number);
         return !isSuccessful ? result : tempResult;
     }
 
@@ -101,7 +77,7 @@ internal class NumberValidator<T> : IValidator where T : struct, IComparable<T>
             return tempResult;
         }
 
-        bool isSuccessful = GenericMethods.TryParse<T>(tempResult, out var number);
+        bool isSuccessful = tempResult.TryParse<T>(out var number);
         return !isSuccessful ? result : tempResult;
     }
 

@@ -5,6 +5,14 @@ namespace ConsoleInput.Internals
 {
     internal static class ValidatorRulesGetter
     {
+        internal static List<IInputRule> GetForHexadecimal()
+        {
+            return new List<IInputRule>()
+            {
+                new ForHexadecimal()
+            };
+        }
+
         internal static List<IInputRule> GetByTypeCode(TypeCode tc, CultureInfo ci)
         {
             switch (tc)

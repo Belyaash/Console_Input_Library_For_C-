@@ -7,5 +7,5 @@ public interface IValidator
     string RemoveLast(string result);
     bool IsValid(string result);
 
-    void AddCheckRules(List<ICheckRule> icr);
+    void ReplaceCheckRules(List<ICheckRule> icr);
 }

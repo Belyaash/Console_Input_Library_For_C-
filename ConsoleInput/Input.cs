@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ConsoleInput.Internals;
 using ConsoleInput.Internals.InputRules.CheckRules;
+using ConsoleInput.Internals.Validator;
 
 namespace ConsoleInput
 {
@@ -151,13 +152,12 @@ namespace ConsoleInput
             ConsoleWriter.OverwritePartOfCurrentLine(newResult,leftPos, leftPos + length);
         }
 
+
+
         /// <summary>
         /// Returns a Boolean value based on the spelling of the corresponding letter
         /// </summary>
-        /// <returns>
-        /// True if user pressed 'y' or 'Y'
-        /// False if user pressed 'n' or 'N'
-        /// </returns>
+        /// <returns> True if user pressed 'y' or 'Y'. False if user pressed 'n' or 'N'</returns>
         public static bool CreateBoolean(string welcome)
         {
             Console.WriteLine(welcome);
@@ -178,6 +178,8 @@ namespace ConsoleInput
             }
         }
 
+
+        
         public static T CreateNumber<T>(string welcome) where T : struct, IComparable<T>
         {
             return CreateNumber<T>(welcome, icr: null);
@@ -229,7 +231,7 @@ namespace ConsoleInput
             format ??= "#,#.###;-#,#.###;0";
             IValidator validator = Validator.GetByTypeCode<T>(typeCode, CultureInfo, minMax.Min, minMax.Max);
             if (icr != null)
-                validator.AddCheckRules(icr);
+                validator.ReplaceCheckRules(icr);
 
             IInputBuffer ib = new InputBuffer(validator, CultureInfo, typeCode);
             InputInConsole<T>(format, ib, leftPos, rightPos);
@@ -240,7 +242,7 @@ namespace ConsoleInput
         }
 
         private static void InputInConsole<T>(string format, IInputBuffer ib, int leftPos, int rightPos)
-            where T : struct, IComparable<T>
+            where T : IComparable<T>
         {
             ConsoleKeyInfo cki;
             do
@@ -249,6 +251,32 @@ namespace ConsoleInput
                 ib.ProcessInput(cki);
                 ib.PrintResultOnPartOfLine(format, leftPos, rightPos);
             } while ((cki.Key != ConsoleKey.Enter) || (!ib.IsValidResult));
+        }
+
+
+
+        public static uint InputHexadecimal(string welcome, MinMax<uint> decimalRange)
+        {
+            Console.WriteLine(welcome);
+
+            IValidator validator = Validator.GetForHexadecimal(CultureInfo, decimalRange.Min, decimalRange.Max);
+            IInputBuffer ib = new InputBuffer(validator, CultureInfo, TypeCode.String);
+            InputInConsole<string>("X", ib, Console.CursorLeft, Console.BufferWidth);
+
+             
+            return uint.Parse(ib.Result, NumberStyles.HexNumber) ;
+        }
+
+        public static string InputHexadecimalString(string welcome, MinMax<uint> decimalRange)
+        {
+            Console.WriteLine(welcome);
+
+            IValidator validator = Validator.GetForHexadecimal(CultureInfo, decimalRange.Min, decimalRange.Max);
+            IInputBuffer ib = new InputBuffer(validator, CultureInfo, TypeCode.String);
+            InputInConsole<string>("X", ib, Console.CursorLeft, Console.BufferWidth);
+
+
+            return ib.Result;
         }
     }
 }
