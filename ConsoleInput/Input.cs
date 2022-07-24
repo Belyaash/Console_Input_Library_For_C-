@@ -267,14 +267,16 @@ namespace ConsoleInput
             return uint.Parse(ib.Result, NumberStyles.HexNumber) ;
         }
 
-        public static string InputHexadecimalString(string welcome, MinMax<uint> decimalRange)
+        public static string InputHexadecimalString(string welcome, MinMax<uint> decimalRange, List<ICheckRule>? icr)
         {
             Console.WriteLine(welcome);
 
             IValidator validator = Validator.GetForHexadecimal(CultureInfo, decimalRange.Min, decimalRange.Max);
+            if (icr != null)
+                validator.ReplaceCheckRules(icr);
             IInputBuffer ib = new InputBuffer(validator, CultureInfo, TypeCode.String);
             InputInConsole<string>("X", ib, Console.CursorLeft, Console.BufferWidth);
-
+            Console.WriteLine();
 
             return ib.Result;
         }
