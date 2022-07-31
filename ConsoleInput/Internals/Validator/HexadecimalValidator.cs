@@ -13,6 +13,7 @@ internal class HexadecimalValidator : IValidator
     private List<ICheckRule> _checkRules = new();
     private readonly uint _min;
     private readonly uint _max;
+
     private HexadecimalValidator(List<IInputRule> rules, uint min, uint max)
     {
         _min = min;
@@ -20,7 +21,7 @@ internal class HexadecimalValidator : IValidator
         _inputRules = rules;
     }
 
-    public static HexadecimalValidator Create(CultureInfo culture, uint min, uint max)
+    public static HexadecimalValidator Create(uint min, uint max)
     {
         List<IInputRule> rules = ValidatorRulesGetter.GetForHexadecimal();
         return new HexadecimalValidator(rules, min, max);
@@ -34,11 +35,15 @@ internal class HexadecimalValidator : IValidator
     public string TryAddSymbol(string result, char symbol)
     {
         if (_checkRules.Any(rule => !rule.Validate(result, symbol)))
-        {
             return result;
-        }
-        string tempResult = result;
 
+        var tempResult = TryAddSymbolForAllRules(result, symbol);
+        return tempResult;
+    }
+
+    private string TryAddSymbolForAllRules(string result, char symbol)
+    {
+        string tempResult = result;
         foreach (var rule in _inputRules)
         {
             tempResult = rule.TryAddSymbol(result, symbol);
@@ -46,9 +51,22 @@ internal class HexadecimalValidator : IValidator
                 break;
         }
 
-        if (tempResult is "")
+        return tempResult;
+    }
+
+    public string RemoveLast(string result)
+    {
+        return TryRemoveSymbolForAllRules(result);
+    }
+
+    private string TryRemoveSymbolForAllRules(string result)
+    {
+        string tempResult = result;
+        foreach (var rule in _inputRules)
         {
-            return tempResult;
+            tempResult = rule.RemoveLastSymbol(result);
+            if (tempResult != result)
+                break;
         }
 
         return tempResult;
@@ -61,27 +79,6 @@ internal class HexadecimalValidator : IValidator
             rule.SetToDefault();
         }
         return "";
-    }
-
-    public string RemoveLast(string result)
-    {
-        if (result.Length == 0)
-            return result;
-
-        string tempResult = result;
-        foreach (var rule in _inputRules)
-        {
-            tempResult = rule.RemoveLastSymbol(result);
-            if (tempResult != result)
-                break;
-        }
-
-        if (tempResult is "")
-        {
-            return tempResult;
-        }
-
-        return tempResult;
     }
 
     public bool IsValid(string result)

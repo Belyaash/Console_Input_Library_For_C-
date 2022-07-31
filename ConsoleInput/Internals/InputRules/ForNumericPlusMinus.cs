@@ -40,6 +40,9 @@
 
         public string RemoveLastSymbol(string result)
         {
+            if (result.Length == 0)
+                return result;
+
             if (result[^1] == '-')
             {
                 IsNegative = false;

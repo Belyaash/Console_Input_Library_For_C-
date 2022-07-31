@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace ConsoleInput.Internals.Validator;
 
-internal class Validator
+internal static class Validator
 {
     public static IValidator GetByTypeCode<T>(TypeCode tc, CultureInfo culture, T min, T max) where T : struct, IComparable<T>
     {
@@ -26,8 +26,8 @@ internal class Validator
         }
     }
 
-    public static IValidator GetForHexadecimal(CultureInfo culture, uint min, uint max)
+    public static IValidator GetForHexadecimal(uint min, uint max)
     {
-        return HexadecimalValidator.Create(culture, min, max);
+        return HexadecimalValidator.Create(min, max);
     }
 }

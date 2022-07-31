@@ -33,6 +33,9 @@ internal class ForDecimalSeparator : IInputRule
 
     public string RemoveLastSymbol(string result)
     {
+        if (result.Length == 0)
+            return result;
+
         if (result[^1] == _separator[^1])
         {
             try

@@ -9,7 +9,7 @@ namespace ConsoleInput
 {
     public static class ConsoleWriter
     {
-        internal static void OverwriteSomeLine<T>(T currentNum, int height)
+        public static void OverwriteSomeLine<T>(T currentNum, int height)
         {
             var text = currentNum is null ? "" : currentNum.ToString();
             SetCursorPosition(0, height);

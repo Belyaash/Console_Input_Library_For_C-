@@ -29,7 +29,7 @@ internal class ForHexadecimal : IInputRule
 
     public string RemoveLastSymbol(string result)
     {
-        return result.Length == 1 ? "" : result.Substring(0, result.Length - 1);
+        return result.Length <= 1 ? "" : result.Substring(0, result.Length - 1);
     }
 
     public void SetToDefault()

@@ -37,15 +37,10 @@ namespace ConsoleInput.Internals.InputRules
 
         public string RemoveLastSymbol(string result)
         {
-            bool isNumber = false;
-            foreach (var number in validChars)
-            {
-                if (number[0] == result[^1])
-                {
-                    isNumber = true;
-                    break;
-                }
-            }
+            if (result.Length == 0)
+                return result;
+
+            bool isNumber = validChars.Any(number => number[0] == result[^1]);
 
             if (!isNumber)
                 return result;

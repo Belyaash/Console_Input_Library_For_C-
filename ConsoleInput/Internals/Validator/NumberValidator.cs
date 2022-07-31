@@ -5,15 +5,16 @@ namespace ConsoleInput.Internals.Validator;
 
 internal class NumberValidator<T> : IValidator where T : struct, IComparable<T>
 {
-    private readonly List<IInputRule> inputRules;
+    private readonly List<IInputRule> _inputRules;
     private List<ICheckRule> _checkRules = new();
     private readonly T _min;
     private readonly T _max;
+
     private NumberValidator(List<IInputRule> rules, T min, T max)
     {
         _min = min;
         _max = max;
-        inputRules = rules;
+        _inputRules = rules;
     }
 
     public static NumberValidator<T> Create(TypeCode tc, CultureInfo culture, T min, T max)
@@ -30,55 +31,67 @@ internal class NumberValidator<T> : IValidator where T : struct, IComparable<T>
     public string TryAddSymbol(string result, char symbol)
     {
         if (_checkRules.Any(rule => !rule.Validate(result, symbol)))
-        {
             return result;
-        }
+
+        string tempResult = TryAddSymbolForAllRules(result, symbol);
+        return IsTempResultValid(tempResult) ? tempResult : result;
+    }
+
+    private string TryAddSymbolForAllRules(string result, char symbol)
+    {
         string tempResult = result;
-        foreach (var rule in inputRules)
+        foreach (var rule in _inputRules)
         {
             tempResult = rule.TryAddSymbol(result, symbol);
             if (tempResult != result)
                 break;
         }
 
-        if (tempResult is "-" or "")
-        {
-            return tempResult;
-        }
-
-        bool isSuccessful = tempResult.TryParse<T>(out var number);
-        return !isSuccessful ? result : tempResult;
-    }
-
-    public string ClearString(string result)
-    {
-        foreach (var rule in inputRules)
-        {
-            rule.SetToDefault();
-        }
-        return "";
+        return tempResult;
     }
 
     public string RemoveLast(string result)
     {
-        if (result.Length == 0)
-            return result;
+        var tempResult = TryRemoveSymbolForAllRules(result);
 
+        return IsTempResultValid(tempResult) ? tempResult : result;
+    }
+
+    private string TryRemoveSymbolForAllRules(string result)
+    {
         string tempResult = result;
-        foreach (var rule in inputRules)
+        foreach (var rule in _inputRules)
         {
             tempResult = rule.RemoveLastSymbol(result);
             if (tempResult != result)
                 break;
         }
 
+        return tempResult;
+    }
+
+    private static bool IsTempResultValid(string tempResult)
+    {
         if (tempResult is "-" or "")
         {
-            return tempResult;
+            return true;
         }
 
-        bool isSuccessful = tempResult.TryParse<T>(out var number);
-        return !isSuccessful ? result : tempResult;
+        return tempResult.TryParse<T>(out var number);
+    }
+
+    public string ClearString(string result)
+    {
+        SetRulesToDefault();
+        return "";
+    }
+
+    private void SetRulesToDefault()
+    {
+        foreach (var rule in _inputRules)
+        {
+            rule.SetToDefault();
+        }
     }
 
     public bool IsValid(string result)

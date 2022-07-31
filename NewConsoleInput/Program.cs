@@ -22,7 +22,7 @@ static class Program
         //bool isValid = _validChars.Contains(cki.KeyChar.ToString().ToUpper());
         //Console.WriteLine(isValid);
 
-        uint hex = Input.InputHexadecimal("Print a hexadecimal",MinMax<uint>.HigherThan(0));
+        uint hex = Input.InputHexadecimalAndConvertToUint("Print a hexadecimal",MinMax<uint>.HigherThan(0));
         Console.WriteLine();
         Console.WriteLine(hex);
 
